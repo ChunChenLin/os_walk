@@ -12,10 +12,11 @@ def get_version_number (filename):
     except:
         return 0,0,0,0
 
-print("Note: The product path should be under \"C:\Program Files\CyberLink\"")
+print("Note: 1.The product path should be under \"C:\Program Files\CyberLink\"")
+print("Note: 2.If you enter only one product, it will list all .exe and .dll files.")
 products = []
 while 1:
-    product = raw_input("Please enter the product name (case-sensitive) or type 'q' or 'Q' if done: ")
+    product = raw_input("Please enter the product name (case-sensitive) or type 'q' or 'Q' if done:")
     if product in ['q','Q']:
         break
     else:
@@ -31,10 +32,15 @@ for dirPath, dirNames, fileNames in os.walk(myPath):
             for fileName in fileNames:
                 fullPath = os.path.join(dirPath, fileName)
                 collect[fileName].append(fullPath)
-                #print fullPath                
-filter = {k: v for k, v in collect.items() if len(v)>1 and (k.split('.')[-1]=="exe" or k.split('.')[-1]=="dll")}
+                #print fullPath            
+                
+if len(products)==1: #list all
+    print("list all .exe and .dll files ...")
+    filter = {k: v for k, v in collect.items() if (k.split('.')[-1]=="exe" or k.split('.')[-1]=="dll")}
+else:
+    filter = {k: v for k, v in collect.items() if len(v)>1 and (k.split('.')[-1]=="exe" or k.split('.')[-1]=="dll")}
 
-fname = raw_input("Please enter a file name you want to export(Cannot be duplicated!): ")
+fname = raw_input("Please enter a file name you want to export(Cannot be duplicated!):")
 # Create a workbook and add a worksheet.
 workbook = xlsxwriter.Workbook(fname+'.xlsx')
 worksheet = workbook.add_worksheet()
@@ -52,7 +58,7 @@ for p in products:
                 s = "."
                 seq = (str(major),str(minor),str(subminor),str(revision))
                 ver = s.join(seq)
-                #print k, fp, ver
+                print k, fp, ver
                 # Iterate over the data and write it out row by row.
                 worksheet.write(row, col,     k)
                 worksheet.write(row, col + 1, fp)
@@ -65,6 +71,4 @@ for p in products:
 #worksheet.write(row, 0, 'Total')
 #worksheet.write(row, 1, '=SUM(B1:B4)')
 workbook.close()
-print("export completed! Go check "+fname+".xlsx")
 os.system("pause")
-
